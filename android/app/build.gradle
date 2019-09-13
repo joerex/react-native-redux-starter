@@ -99,7 +99,7 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.reckleydesign.chef"

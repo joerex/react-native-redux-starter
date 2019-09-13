@@ -6,16 +6,25 @@ import {loadRecipes} from '../api/recipes';
 import {Dialogflow_V2 as Dialogflow} from "react-native-dialogflow";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { List, ListItem, Header } from 'react-native-elements'
+import Voice from 'react-native-voice';
+
+
+Voice.onSpeechStart = () => console.log('start')
+Voice.onSpeechEnd = error => console.log('end', error)
+Voice.onSpeechResults = results => console.log('results', results)
 
 const RecipesComponent = (props) => {
   const {loadingRecipes, recipes} = props;
-
-  Dialogflow.setConfiguration("ya29.c.El-4Beo_3MfR7-B4rD9yv1Jj4TbV4tUniKPqYIOCdrcCdIB5HKhVOBWDhvntYPpAxhTv0abpP_H72iOThEF_VTWRpB46AwhM3LuNanYk3BxmuyN2ermBfUjel4MjpC_bEw", Dialogflow.LANG_ENGLISH, 'chef-ab805');
+  const isRecognizing = Voice.isRecognizing();
 
   return (
     <View style={styles.container}>
       { loadingRecipes &&
         <Text>Loading Recipes...</Text>
+      }
+
+      { isRecognizing &&
+        <Text>Listening...</Text>
       }
 
       { !loadingRecipes &&
@@ -105,32 +114,36 @@ const styles = StyleSheet.create({
 const handlePressIn = () => {
   console.log('Pressed');
 
-  Dialogflow.startListening(result=>{
-    console.log(result);
-    Dialogflow.subscription.remove();
-  }, error=>{
-    console.log(error);
-  }, partial=> {
-    console.log(partial);
-  });
+  Voice.start('en-US');
   /*
-  Animated.timing(this.state.pressAction, {
-    duration: ACTION_TIMER,
-    toValue: 1
-  }).start(this.animationActionComplete);
-  */
+    Dialogflow.startListening(result=>{
+      console.log('Result', result);
+      Dialogflow.subscription.remove();
+    }, error=>{
+      console.log('Error', error);
+    });
+
+
+    Animated.timing(this.state.pressAction, {
+      duration: ACTION_TIMER,
+      toValue: 1
+    }).start(this.animationActionComplete);
+    */
 };
 
 const handlePressOut = () => {
   console.log('Unpressed');
 
-  Dialogflow.finishListening();
+  Voice.stop();
+
   /*
-  Animated.timing(this.state.pressAction, {
-    duration: this._value * ACTION_TIMER,
-    toValue: 0
-  }).start();
-  */
+    Dialogflow.finishListening();
+
+    Animated.timing(this.state.pressAction, {
+      duration: this._value * ACTION_TIMER,
+      toValue: 0
+    }).start();
+    */
 };
 
 RecipesComponent.propTypes = {
